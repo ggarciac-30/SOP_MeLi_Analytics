@@ -14,7 +14,7 @@
         { "valor": "4,732", "etiqueta": "Demanda máxima observada" },
         { "valor": "×75", "etiqueta": "Salto entre percentil 99 y 100", "tipo": "alerta" }
       ],
-      "imagen": "images/histograma-percentiles.png",
+      "imagen": "images/histograma_percentiles.png",
       "respuesta": "Entre el percentil 1 y el 80 (el 80% de las transacciones \"normales\"), la demanda pasa de 0 a apenas 9 unidades. Entre el percentil 99 y el 100 (el último 1%), la demanda salta de 63 a 4,732 unidades — una distribución fuertemente sesgada a la derecha. En escala real, el salto entre percentiles se multiplica más de 2,000 veces entre el cuerpo de la distribución y la cola; en escala logarítmica, ese mismo salto solo crece 10 veces. Esta es la evidencia cuantitativa que justifica entrenar sobre log(1 + demanda) en vez de sobre las unidades crudas.",
       "grafica": {
         "tipo": "bar",
