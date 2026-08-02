@@ -1,0 +1,307 @@
+/* ================================================================
+   styles.css — Caso S&OP · Pronóstico de Demanda
+   Todas las variables de diseño viven en :root, al inicio de este
+   archivo. Para cambiar colores, tipografía o el ancho del
+   contenido, edita SOLO este bloque — el resto del CSS las usa
+   por referencia (var(--nombre)) y se actualiza solo.
+   ================================================================ */
+
+:root {
+  /* --- color: fondo y tinta --- */
+  --fondo:        #10141B;
+  --panel:        #171C25;
+  --panel-2:      #1D2430;
+  --linea:        rgba(233, 231, 225, 0.09);
+  --linea-fuerte: rgba(233, 231, 225, 0.16);
+
+  --texto:        #E9E7E1;
+  --texto-suave:  #9AA3B2;
+  --texto-tenue:  #616B7A;
+
+  /* --- color: acentos con significado --- */
+  --azul:   #5B9BE0;   /* validado / honesto */
+  --azul-10: rgba(91, 155, 224, 0.14);
+  --ambar:  #E0A339;   /* alerta / fuga de datos */
+  --ambar-10: rgba(224, 163, 57, 0.14);
+  --verde:  #4FAE7C;   /* recomendado / correcto */
+  --verde-10: rgba(79, 174, 124, 0.14);
+  --rojo:   #D9695F;   /* severidad alta */
+  --rojo-10: rgba(217, 105, 95, 0.14);
+
+  /* --- tipografia --- */
+  --fuente-principal: "Inter", -apple-system, sans-serif;
+  --fuente-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  /* --- layout --- */
+  --ancho-sidebar: 248px;
+  --ancho-contenido: 980px;
+  --radio: 10px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: var(--fuente-principal);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: -0.01em; }
+p { margin: 0; }
+ul { margin: 0; padding: 0; list-style: none; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; }
+
+/* ================================================================
+   OVERLAY DE ROTACION (movil)
+   Mostrado/ocultado por checkOrientation() en js/script.js
+   ================================================================ */
+#rotate-message {
+  display: none;
+  position: fixed; inset: 0; z-index: 200;
+  background: var(--fondo);
+  align-items: center; justify-content: center; text-align: center;
+  padding: 32px;
+}
+#rotate-message.visible { display: flex; }
+.rotate-content .phone-icon { font-size: 2.6rem; animation: rotar 1.8s ease-in-out infinite; }
+.rotate-content h2 { margin-top: 18px; font-size: 1.2rem; }
+.rotate-content p { margin-top: 10px; color: var(--texto-suave); font-size: .92rem; max-width: 34ch; }
+@keyframes rotar { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(90deg); } }
+
+/* ================================================================
+   BADGE FLOTANTE
+   ================================================================ */
+.floating-badge {
+  position: fixed; top: 18px; right: 18px; z-index: 60;
+  display: flex; align-items: center; gap: 8px;
+  background: var(--panel); border: 1px solid var(--linea-fuerte);
+  padding: 8px 14px; border-radius: 100px; font-size: 12.5px;
+  color: var(--texto-suave); transition: border-color .15s, color .15s;
+}
+.floating-badge:hover { border-color: var(--azul); color: var(--texto); }
+@media (max-width: 640px) { .floating-badge-text { display: none; } .floating-badge { padding: 8px 10px; } }
+
+/* ================================================================
+   SIDEBAR
+   ================================================================ */
+.sidebar {
+  position: fixed; top: 0; left: 0; bottom: 0; width: var(--ancho-sidebar);
+  background: var(--panel); border-right: 1px solid var(--linea);
+  display: flex; flex-direction: column; z-index: 40; overflow-y: auto;
+}
+.sidebar-header { display: flex; align-items: center; gap: 10px; padding: 26px 24px 20px; }
+.sidebar-logo { font-size: 1.3rem; }
+.sidebar-title { font-weight: 700; font-size: 15px; }
+.sidebar-nav { display: flex; flex-direction: column; padding: 8px 14px; gap: 2px; }
+.nav-link {
+  padding: 10px 14px; border-radius: 7px; font-size: 13.5px; color: var(--texto-suave);
+  border-left: 2px solid transparent; transition: background .15s, color .15s, border-color .15s;
+}
+.nav-link:hover { background: var(--panel-2); color: var(--texto); }
+.nav-link.active { color: var(--texto); background: var(--azul-10); border-left-color: var(--azul); font-weight: 500; }
+
+.menu-toggle {
+  display: none; position: fixed; top: 16px; left: 16px; z-index: 70;
+  background: var(--panel); border: 1px solid var(--linea-fuerte); color: var(--texto);
+  width: 40px; height: 40px; border-radius: 8px; font-size: 16px; cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); transition: transform .25s ease; box-shadow: 20px 0 40px rgba(0,0,0,.4); }
+  .sidebar.open { transform: translateX(0); }
+  .menu-toggle { display: block; }
+  .main-content { margin-left: 0 !important; }
+}
+
+/* ================================================================
+   CONTENIDO PRINCIPAL
+   ================================================================ */
+.main-content { margin-left: var(--ancho-sidebar); }
+.content-wrap { max-width: var(--ancho-contenido); margin: 0 auto; padding: 0 32px; }
+
+.page-section { padding: 88px 0; border-bottom: 1px solid var(--linea); }
+.page-section:last-of-type { border-bottom: none; }
+.section-title { font-size: clamp(1.5rem, 2.6vw, 2rem); margin-bottom: 28px; }
+.mini-title { font-size: 1.02rem; margin-bottom: 14px; }
+
+.hero-section { padding-top: 110px; border-bottom: 1px solid var(--linea); }
+.badge {
+  display: inline-block; font-family: var(--fuente-mono); font-size: 12px;
+  color: var(--texto-tenue); border: 1px solid var(--linea-fuerte); border-radius: 100px;
+  padding: 5px 14px; margin-bottom: 22px;
+}
+.hero-section h1 { font-size: clamp(1.9rem, 4vw, 2.9rem); line-height: 1.15; max-width: 20ch; }
+.hero-subtitle { margin-top: 20px; max-width: 66ch; color: var(--texto-suave); font-size: 1.08rem; }
+.btn-primary {
+  display: inline-block; margin-top: 28px; background: var(--azul); color: #071019;
+  font-weight: 600; padding: 12px 22px; border-radius: 8px; font-size: 14px;
+  transition: opacity .15s;
+}
+.btn-primary:hover { opacity: .85; }
+
+.stat-grid { margin-top: 52px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--linea); border: 1px solid var(--linea); border-radius: var(--radio); overflow: hidden; }
+.stat { background: var(--panel); padding: 20px; }
+.stat .valor { font-family: var(--fuente-mono); font-size: 1.7rem; color: var(--azul); font-weight: 600; }
+.stat .etiqueta { margin-top: 6px; font-size: 12px; color: var(--texto-suave); }
+@media (max-width: 640px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+
+/* ================================================================
+   TEXT BLOCK / LISTAS
+   ================================================================ */
+.text-block { color: var(--texto-suave); font-size: .98rem; max-width: 74ch; }
+.text-block p + p { margin-top: 12px; }
+
+.two-col-list { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 36px; }
+@media (max-width: 760px) { .two-col-list { grid-template-columns: 1fr; } }
+
+.check-list li { position: relative; padding-left: 24px; font-size: .92rem; color: var(--texto-suave); margin-bottom: 11px; }
+.check-list li::before { content: "→"; position: absolute; left: 0; color: var(--azul); font-family: var(--fuente-mono); }
+.flag-list li { border-left: 2px solid var(--ambar); padding: 3px 0 3px 16px; font-size: .92rem; color: var(--texto-suave); margin-bottom: 13px; }
+.simple-list li { position: relative; padding-left: 22px; font-size: .95rem; color: var(--texto-suave); margin-bottom: 12px; }
+.simple-list li::before { content: "•"; position: absolute; left: 4px; color: var(--verde); }
+
+/* ================================================================
+   CALLOUT — bloque destacado (decisión de negocio, recomendaciones)
+   ================================================================ */
+.callout {
+  display: flex; gap: 16px; align-items: flex-start; margin-top: 28px;
+  padding: 20px 22px; border-radius: var(--radio); border: 1px solid var(--linea-fuerte);
+}
+.callout-icon { font-size: 1.4rem; line-height: 1; }
+.callout strong { display: block; margin-bottom: 6px; font-size: .98rem; }
+.callout p { color: var(--texto-suave); font-size: .92rem; }
+.callout-info { background: var(--azul-10); border-color: rgba(91,155,224,.3); }
+.callout-recomendacion { background: var(--verde-10); border-color: rgba(79,174,124,.3); }
+.callout-recomendacion .simple-list { margin-top: 10px; }
+
+/* ================================================================
+   CARD GRID (dataset)
+   ================================================================ */
+.card-grid { margin-top: 28px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.card { background: var(--panel); border: 1px solid var(--linea); border-radius: var(--radio); padding: 20px 22px; }
+.card h3 { font-size: .98rem; margin-bottom: 8px; }
+.card p { color: var(--texto-suave); font-size: .89rem; }
+
+/* ================================================================
+   ALERTA — calidad de datos
+   ================================================================ */
+.alerta { border-left: 3px solid; border-radius: 0 8px 8px 0; padding: 14px 18px; margin-bottom: 12px; background: var(--panel); }
+.alerta strong { display: block; margin-bottom: 5px; font-size: .93rem; }
+.alerta p { color: var(--texto-suave); font-size: .88rem; }
+.alerta-amarilla { border-color: var(--ambar); }
+.alerta-verde { border-color: var(--verde); }
+.alerta-roja { border-color: var(--rojo); }
+
+/* ================================================================
+   TARJETAS DE FASE (analisisContainer)
+   ================================================================ */
+.fase-card { border: 1px solid var(--linea); border-radius: 14px; overflow: hidden; margin-bottom: 40px; background: var(--panel); }
+.fase-card-head { padding: 28px 28px 8px; }
+.fase-tag { font-family: var(--fuente-mono); font-size: 11.5px; color: var(--azul); text-transform: uppercase; letter-spacing: .07em; }
+.fase-card-head h3 { margin-top: 10px; font-size: 1.28rem; }
+.fase-card-head .resumen { margin-top: 12px; color: var(--texto-suave); font-size: .95rem; max-width: 74ch; }
+.fase-card-body { padding: 8px 28px 28px; }
+
+.kpi-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 22px 0; }
+.kpi { border: 1px solid var(--linea); border-radius: 8px; padding: 14px 16px; background: var(--panel-2); }
+.kpi .v { font-family: var(--fuente-mono); font-size: 1.25rem; }
+.kpi .l { margin-top: 3px; font-size: 11px; color: var(--texto-suave); }
+@media (max-width: 640px) { .kpi-strip { grid-template-columns: repeat(2, 1fr); } }
+
+.regla-temporal {
+  margin: 16px 0 24px; font-size: .88rem; color: var(--texto-suave);
+  border-left: 2px solid var(--azul); background: var(--panel-2); padding: 10px 16px; border-radius: 0 6px 6px 0;
+}
+
+/* --- tabla dentro de tarjeta de fase --- */
+.table-block { margin: 20px 0; }
+.table-block-title { font-size: .92rem; font-weight: 600; margin-bottom: 10px; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--linea); border-radius: 8px; }
+table { width: 100%; border-collapse: collapse; font-size: .87rem; min-width: 420px; }
+thead th {
+  text-align: left; font-family: var(--fuente-mono); font-size: 11px; text-transform: uppercase;
+  letter-spacing: .05em; color: var(--texto-tenue); background: var(--panel-2);
+  padding: 10px 14px; border-bottom: 1px solid var(--linea-fuerte); white-space: nowrap;
+}
+tbody td { padding: 9px 14px; border-bottom: 1px solid var(--linea); color: var(--texto-suave); font-family: var(--fuente-mono); font-variant-numeric: tabular-nums; }
+tbody td:first-child { color: var(--texto); font-family: var(--fuente-principal); }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr.fila-destacada td { color: var(--verde); }
+tbody tr.fila-destacada td:first-child { color: var(--texto); font-weight: 600; }
+.badge-mini { display: inline-block; font-family: var(--fuente-mono); font-size: 10px; padding: 2px 7px; border-radius: 100px; margin-left: 8px; background: var(--verde-10); color: var(--verde); text-transform: uppercase; }
+.tabla-nota { margin-top: 10px; font-size: .85rem; color: var(--texto-suave); border-left: 2px solid var(--azul); padding: 8px 14px; background: var(--panel-2); border-radius: 0 6px 6px 0; }
+
+/* --- hallazgos dentro de tarjeta de fase --- */
+.hallazgos-list { margin-top: 20px; }
+.hallazgos-list .mini-title { font-size: .85rem; text-transform: uppercase; letter-spacing: .05em; color: var(--texto-tenue); font-family: var(--fuente-mono); margin-bottom: 10px; }
+
+/* --- chart embebido dentro de tarjeta de fase --- */
+.chart-card { border: 1px solid var(--linea); border-radius: 8px; background: var(--panel-2); padding: 18px; margin: 20px 0; }
+.chart-card canvas { max-height: 260px; }
+
+/* --- codigo dentro de tarjeta de fase --- */
+.code-block { background: #0B0E13; border: 1px solid var(--linea); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 16px 0; }
+.code-block pre { margin: 0; font-family: var(--fuente-mono); font-size: 12px; line-height: 1.6; color: #B9C6D9; white-space: pre-wrap; }
+
+/* ================================================================
+   FASE B — JERARQUIA (funnel de 5 niveles)
+   ================================================================ */
+.hierarchy { display: flex; flex-direction: column; gap: 8px; margin: 20px 0; }
+.hlevel { display: grid; grid-template-columns: 34px 1fr; gap: 12px; }
+.hlevel .hn { font-family: var(--fuente-mono); color: var(--texto-tenue); font-size: 12px; padding-top: 12px; }
+.hbar-wrap { border: 1px solid var(--linea); border-radius: 8px; background: var(--panel-2); padding: 13px 16px; position: relative; overflow: hidden; }
+.hbar-fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--azul-10); border-right: 2px solid var(--azul); z-index: 0; }
+.hbar-content { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.hbar-name { font-weight: 600; font-size: .92rem; }
+.hbar-q { font-size: .8rem; color: var(--texto-suave); display: block; margin-top: 2px; font-style: italic; }
+.hbar-stats { display: flex; gap: 16px; font-family: var(--fuente-mono); font-size: 11.5px; color: var(--texto-suave); white-space: nowrap; }
+.hbar-stats b { color: var(--texto); }
+
+/* ================================================================
+   FASE C — TOGGLE HONESTA / TRAMPA (elemento distintivo)
+   ================================================================ */
+.leak-demo { border-radius: 12px; border: 1px solid var(--linea-fuerte); overflow: hidden; margin: 24px 0; transition: border-color .3s; }
+.leak-demo[data-mode="honesta"] { border-color: rgba(91,155,224,.35); }
+.leak-demo[data-mode="trampa"] { border-color: rgba(224,163,57,.5); }
+.leak-top { padding: 22px 24px 20px; background: var(--panel-2); transition: background .3s; }
+.leak-demo[data-mode="trampa"] .leak-top { background: linear-gradient(180deg, rgba(224,163,57,.09), var(--panel-2) 60%); }
+.leak-demo[data-mode="honesta"] .leak-top { background: linear-gradient(180deg, rgba(91,155,224,.08), var(--panel-2) 60%); }
+.toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.toggle-switch { display: inline-flex; border: 1px solid var(--linea-fuerte); border-radius: 100px; padding: 3px; background: var(--panel); }
+.toggle-switch button { border: none; background: none; color: var(--texto-suave); font-family: var(--fuente-mono); font-size: 12px; padding: 8px 16px; border-radius: 100px; cursor: pointer; transition: background .2s, color .2s; }
+.toggle-switch button.active.modo-honesta { background: var(--azul); color: #071019; }
+.toggle-switch button.active.modo-trampa { background: var(--ambar); color: #1a1200; }
+.leak-readout { display: flex; align-items: baseline; gap: 12px; margin-top: 18px; }
+.leak-readout .rmsle-val { font-family: var(--fuente-mono); font-size: 2.6rem; font-weight: 600; transition: color .3s; }
+.leak-demo[data-mode="honesta"] .rmsle-val { color: var(--azul); }
+.leak-demo[data-mode="trampa"] .rmsle-val { color: var(--ambar); }
+.leak-readout .rmsle-label { color: var(--texto-suave); font-size: .87rem; max-width: 28ch; }
+.leak-note { margin-top: 14px; font-size: .88rem; color: var(--texto-suave); }
+.leak-sql { background: #0B0E13; padding: 18px 24px; border-top: 1px solid var(--linea); }
+.leak-sql pre { margin: 0; font-family: var(--fuente-mono); font-size: 12px; line-height: 1.6; color: #B9C6D9; white-space: pre-wrap; }
+
+/* ================================================================
+   FOOTER
+   ================================================================ */
+.page-footer { padding: 44px 0 64px; color: var(--texto-tenue); font-size: 12.5px; }
+.footer-links { margin-top: 12px; display: flex; gap: 20px; font-family: var(--fuente-mono); }
+.footer-links a { color: var(--texto-suave); transition: color .15s; }
+.footer-links a:hover { color: var(--azul); }
+
+/* ================================================================
+   REVEAL ON SCROLL
+   ================================================================ */
+.reveal { opacity: 0; transform: translateY(14px); transition: opacity .5s ease, transform .5s ease; }
+.reveal.in { opacity: 1; transform: translateY(0); }
+
+a:focus-visible, button:focus-visible { outline: 2px solid var(--azul); outline-offset: 2px; }
