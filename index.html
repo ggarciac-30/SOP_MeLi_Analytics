@@ -364,21 +364,46 @@ cli = cli.drop_duplicates(subset=["Cliente_ID", "NombreCliente"])</code></pre>
       <div class="codigo-card" id="calculo-cv">
         <h3>5. Coeficiente de variación: ¿cuánto confiar en cada media?</h3>
         <p class="codigo-desc">SQLite no tiene función nativa de desviación estándar — se arma con la fórmula manual (varianza = promedio de las diferencias al cuadrado).</p>
-        <span class="codigo-etiqueta codigo-etiqueta-sql">SQL</span>
-        <pre class="leak-sql-block"><code class="language-sql">WITH medias AS (
-    SELECT Cliente_ID, Producto_ID, AVG(Demanda_uni_equil) AS media
-    FROM ventas WHERE Semana BETWEEN 3 AND 7
-    GROUP BY Cliente_ID, Producto_ID
-)
-SELECT v.Cliente_ID, v.Producto_ID,
-       SQRT(AVG((v.Demanda_uni_equil - m.media) * (v.Demanda_uni_equil - m.media)))
-         / m.media AS cv
-FROM ventas v
-JOIN medias m ON v.Cliente_ID = m.Cliente_ID AND v.Producto_ID = m.Producto_ID
-GROUP BY v.Cliente_ID, v.Producto_ID;</code></pre>
+        
         <span class="codigo-etiqueta codigo-etiqueta-python" style="margin-top: var(--espacio-sm);">Python</span>
-        <pre class="leak-sql-block"><code class="language-python">stats = detalle.groupby(["Cliente_ID", "Producto_ID"])["Demanda_uni_equil"].agg(["mean", "std"])
-stats["cv"] = stats["std"] / stats["mean"]</code></pre>
+<pre class="leak-sql-block"><code class="language-python">def calcular_coeficiente_variacion(con, semana_min=3, semana_max=7, min_semanas=2):
+    """
+    Calcula el coeficiente de variacion (CV = desviacion_estandar / media) de la
+    demanda semanal para cada combinacion Cliente_ID + Producto_ID, usando
+    unicamente las semanas [semana_min, semana_max] -- mismo rango que los
+    encoders (enc_cliprod, etc.), para no mezclar la semana 8 de validacion.
+
+    Solo se calcula para combinaciones con 2 o mas semanas de historial --
+    con una sola observacion, la desviacion estandar no esta definida.
+    """
+    detalle = pd.read_sql(f"""
+        SELECT Cliente_ID, Producto_ID, Demanda_uni_equil
+        FROM ventas
+        WHERE Semana BETWEEN {semana_min} AND {semana_max}
+    """, con)
+
+    stats = (detalle.groupby(["Cliente_ID", "Producto_ID"])["Demanda_uni_equil"]
+                     .agg(["mean", "std", "count"])
+                     .reset_index())
+
+    stats = stats[stats["count"] >= min_semanas].copy()
+    stats["cv"] = stats["std"] / stats["mean"]
+    return stats
+
+
+# --- Uso ---
+cv_resultado = calcular_coeficiente_variacion(con)
+print(f"Combinaciones con 2+ semanas de historial: {len(cv_resultado)}")
+
+muy_estable = (cv_resultado["cv"] < 0.3).mean() * 100
+moderado    = ((cv_resultado["cv"] >= 0.3) & (cv_resultado["cv"] < 1.0)).mean() * 100
+muy_volatil = (cv_resultado["cv"] >= 1.0).mean() * 100
+
+print(f"Muy estable (CV < 0.3): {muy_estable:.1f}%")
+print(f"Moderadamente variable (0.3 <= CV < 1.0): {moderado:.1f}%")
+print(f"Muy volátil (CV >= 1.0): {muy_volatil:.1f}%")
+
+</code></pre>
       </div>
 
       <div class="codigo-card" id="calculo-encoders">
