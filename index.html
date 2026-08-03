@@ -366,9 +366,7 @@ cli = cli.drop_duplicates(subset=["Cliente_ID", "NombreCliente"])</code></pre>
         <p class="codigo-desc">SQLite no tiene función nativa de desviación estándar — se arma con la fórmula manual (varianza = promedio de las diferencias al cuadrado).</p>
         
         <span class="codigo-etiqueta codigo-etiqueta-python" style="margin-top: var(--espacio-sm);">Python</span>
-<pre class="leak-sql-block"><code class="language-python">def calcular_coeficiente_variacion(con, semana_min=3, semana_max=7, min_semanas=2):
-    """
-    Calcula el coeficiente de variacion (CV = desviacion_estandar / media) de la
+<pre class="leak-sql-block"><code class="language-python">"""Calcula el coeficiente de variacion (CV = desviacion_estandar / media) de la
     demanda semanal para cada combinacion Cliente_ID + Producto_ID, usando
     unicamente las semanas [semana_min, semana_max] -- mismo rango que los
     encoders (enc_cliprod, etc.), para no mezclar la semana 8 de validacion.
@@ -376,6 +374,9 @@ cli = cli.drop_duplicates(subset=["Cliente_ID", "NombreCliente"])</code></pre>
     Solo se calcula para combinaciones con 2 o mas semanas de historial --
     con una sola observacion, la desviacion estandar no esta definida.
     """
+
+  def calcular_coeficiente_variacion(con, semana_min=3, semana_max=7, min_semanas=2):
+    
     detalle = pd.read_sql(f"""
         SELECT Cliente_ID, Producto_ID, Demanda_uni_equil
         FROM ventas
