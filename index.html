@@ -92,14 +92,7 @@
     <!-- ===== SECCION: INICIO ===== -->
     <section id="inicio" class="page-section hero-section">
       <span class="badge">Análisis realizado por Gustavo Garcia Carrillo</span>
-      <h1>S&OP · Pronóstico de Demanda Semanal | Sr. Analyst</h1>
-      <p class="hero-subtitle">
-        Evaluamos si conviene pasar a producción un modelo de machine learning (LightGBM) o si el
-        promedio histórico jerárquico —construido enteramente en SQL— es suficiente para pronosticar
-        la demanda semanal, sobre 8 millones de transacciones. La respuesta, medida con honestidad,
-        no fue la esperada.
-      </p>
-      <a href="#objetivo" class="btn-primary">Ver el análisis ↓</a>
+      <h1>S&OP · Sr. Analyst | Pronóstico de Demanda Semanal </h1>
 
       <!-- Los KPIs de portada (transacciones, clientes, RMSLE, etc.) se
            quitaron a proposito para no repetir numeros que ya aparecen en
@@ -113,11 +106,11 @@
       <h2 class="section-title">Objetivo del análisis</h2>
       <div class="text-block">
         <p>
-          Pronosticar la demanda de un producto para una semana determinada, en una tienda especial,
-          a partir de 8 semanas de transacciones de venta en México. Cada semana, camiones de reparto
-          entregan producto a los vendedores; cada transacción registra ventas y devoluciones (producto
-          no vendido y caducado). La demanda ajustada se define como las ventas de la semana menos las
-          devoluciones de la semana siguiente, con piso en cero — la variable objetivo del proyecto.
+          Se busca pronosticar la demanda de un producto para una semana determinada (semana 9), en una tienda en particular,
+          a partir de 8 semanas de transacciones de venta en México. Cada semana, camiones de reparto entregan producto a los 
+          vendedores; cada transacción registra ventas y devoluciones (producto no vendido y caducado). La demanda ajustada se 
+          define como las ventas de la semana menos las devoluciones de la semana siguiente, con piso en cero — la variable 
+          objetivo del proyecto.
         </p>
       </div>
 
@@ -137,7 +130,7 @@
         <span class="callout-icon">🎯</span>
         <div>
           <strong>Decisión de negocio detrás del análisis</strong>
-          <p>Elegir, con evidencia y no con intuición, el método de pronóstico que debe pasar a producción para la semana 9 — y ser honestos si ese método resulta ser el más simple de los tres evaluados.</p>
+          <p>Se realizo un EDA (Análisis Exploratorio de Datos) mostrando la evidencia y comportamiento de los datos, para estimar el método de pronóstico mas ideal, para calcular la demanda en la semana 9.</p>
         </div>
       </div>
     </section>
@@ -146,7 +139,7 @@
     <section id="dataset" class="page-section">
       <h2 class="section-title">Dataset</h2>
       <div class="text-block">
-        <p>Cinco fuentes identificadas, correspondientes a un esquema típico de "hechos y catálogos" en un sistema de distribución. Todo el análisis se ejecutó en SQL sobre una base SQLite construida a partir de estos archivos:</p>
+        <p>Se tienen 5 fuentes de adtos identificadas, correspondientes a un esquema típico de "hechos y catálogos" en un sistema de distribución. Todo el análisis se ejecutó en SQL sobre una base SQLite construida a partir de estos archivos:</p>
       </div>
 
       <div class="card-grid">
@@ -160,7 +153,7 @@
         </div>
         <div class="card">
           <h3>cliente_tabla.csv — Clientes</h3>
-          <p>935,362 filas. Catálogo de clientes (tiendas), con inconsistencias de captura a limpiar.</p>
+          <p>935,362 filas. Catálogo de clientes (tiendas), con inconsistencias de captura a que seran necesarias de limpiar.</p>
         </div>
         <div class="card">
           <h3>Producto_tabla.csv — Productos</h3>
@@ -179,7 +172,7 @@
 
       <div class="alerta alerta-amarilla">
         <strong>4,862 Cliente_ID con más de un nombre asociado</strong>
-        <p>Al normalizar espacios en blanco, 4,861 de esos casos (100.0%) resultaron ser el mismo nombre con formato inconsistente — solo 1 caso es un conflicto de datos genuino.</p>
+        <p>Casos donde se tenian mas espacios en blanco en la captura del nombre (4,861 de los que (100.0%) resultaron ser el mismo nombre con formato inconsistente) — solo 1 caso es un conflicto de datos genuino, dos nombres distintos.</p>
       </div>
 
       <div class="alerta alerta-amarilla">
