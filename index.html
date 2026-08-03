@@ -295,7 +295,7 @@
       </div>
 
       <div class="codigo-card" id="calculo-basedatos">
-        <h3>1. Base de datos: 5 tablas con llaves reales</h3>
+        <h3>a. Base de datos: 5 tablas con llaves reales</h3>
         <p class="codigo-desc">Catálogos (clientes, productos, agencias) con PRIMARY KEY; ventas y test con FOREIGN KEY hacia esos catálogos.</p>
         <span class="codigo-etiqueta codigo-etiqueta-sql">SQL</span>
         <pre class="leak-sql-block"><code class="language-sql">CREATE TABLE ventas (
@@ -314,7 +314,7 @@ for chunk in pd.read_csv(DATA_DIR / "dfcandidate.csv", chunksize=500_000):
       </div>
 
       <div class="codigo-card" id="calculo-estadisticos">
-        <h3>2. Estadísticos generales de la demanda</h3>
+        <h3>b. Estadísticos generales de la demanda</h3>
         <p class="codigo-desc">Mínimo, media, máximo y porcentaje de transacciones en cero — el primer vistazo a la forma de la variable, antes de profundizar con percentiles.</p>
         <span class="codigo-etiqueta codigo-etiqueta-sql">SQL</span>
         <pre class="leak-sql-block"><code class="language-sql">SELECT
@@ -330,7 +330,7 @@ pct_ceros = (ventas["Demanda_uni_equil"] == 0).mean() * 100</code></pre>
       </div>
 
       <div class="codigo-card" id="calculo-percentiles">
-        <h3>3. Percentiles: cuantificar el sesgo de la demanda</h3>
+        <h3>c. Percentiles: cuantificar el sesgo de la demanda</h3>
         <p class="codigo-desc">100 grupos de igual tamaño (no de igual ancho) — necesario porque el 80% de las transacciones vale 9 unidades o menos.</p>
         <span class="codigo-etiqueta codigo-etiqueta-sql">SQL</span>
         <pre class="leak-sql-block"><code class="language-sql">WITH percentiles AS (
@@ -346,7 +346,7 @@ resumen = serie.groupby(grupo).agg(["min", "max"])</code></pre>
       </div>
 
       <div class="codigo-card" id="calculo-limpieza">
-        <h3>4. Limpieza de cliente_tabla: nombres duplicados</h3>
+        <h3>d. Limpieza de cliente_tabla: nombres duplicados</h3>
         <p class="codigo-desc">4,862 Cliente_ID con más de un nombre — 4,861 eran el mismo nombre con espacios de más, resueltos al normalizar.</p>
         <span class="codigo-etiqueta codigo-etiqueta-sql">SQL</span>
         <pre class="leak-sql-block"><code class="language-sql">SELECT Cliente_ID, COUNT(DISTINCT NombreCliente) AS n_nombres
@@ -392,7 +392,7 @@ def limpiar_tabla_clientes(cli: pd.DataFrame) -> pd.DataFrame:
       </div>
 
       <div class="codigo-card" id="calculo-cv">
-        <h3>5. Coeficiente de variación: ¿cuánto confiar en cada media?</h3>
+        <h3>e. Coeficiente de variación: ¿cuánto confiar en cada media?</h3>
         <p class="codigo-desc">SQLite no tiene función nativa de desviación estándar — se arma con la fórmula manual (varianza = promedio de las diferencias al cuadrado).</p>
         
         <span class="codigo-etiqueta codigo-etiqueta-python" style="margin-top: var(--espacio-sm);">Python</span>
@@ -438,7 +438,7 @@ print(f"Muy volátil (CV >= 1.0): {muy_volatil:.1f}%")
       </div>
 
       <div class="codigo-card" id="calculo-encoders">
-        <h3>6. Encoders jerárquicos: media histórica por nivel</h3>
+        <h3>f. Encoders jerárquicos: media histórica por nivel</h3>
         <p class="codigo-desc">Mismo patrón repetido 5 veces (cliente+producto, agencia+producto, ruta+producto, cliente, producto), solo cambia la columna de agrupación.</p>
         <span class="codigo-etiqueta codigo-etiqueta-sql">SQL</span>
         <pre class="leak-sql-block"><code class="language-sql">
@@ -488,7 +488,7 @@ WHERE Semana BETWEEN 3 AND 7
 GROUP BY Producto_ID;</code></pre>
         
       <div class="codigo-card" id="calculo-umbral">
-        <h3>7. Umbral de respaldo: cuándo confiar en un ranking</h3>
+        <h3>g. Umbral de respaldo: cuándo confiar en un ranking</h3>
         <p class="codigo-desc">El promedio del top 10 se estabiliza a partir de 150 transacciones de respaldo mínimo — antes de eso, el ranking está dominado por ruido de muestra chica.</p>
         <span class="codigo-etiqueta codigo-etiqueta-sql">SQL</span>
         <pre class="leak-sql-block"><code class="language-sql">SELECT AVG(cli_mean) FROM (
@@ -503,7 +503,7 @@ GROUP BY Producto_ID;</code></pre>
       </div>
 
       <div class="codigo-card" id="calculo-fuga">
-        <h3>8. Separación temporal: honesta vs. con trampa</h3>
+        <h3>h. Separación temporal: honesta vs. con trampa</h3>
         <p class="codigo-desc">La única diferencia es un rango de semanas — y produce un RMSLE 44.5% distinto (ver pregunta 6 de Análisis).</p>
         <span class="codigo-etiqueta codigo-etiqueta-sql">SQL</span>
         <pre class="leak-sql-block"><code class="language-sql">-- Honesta: la semana 8 (a validar) queda AFUERA del calculo
@@ -525,7 +525,7 @@ rmsle_trampa  = rmsle(real, pred_trampa)    # 0.3397 -- inflado, no confiable</c
       </div>
 
       <div class="codigo-card" id="calculo-modelo">
-        <h3>9. Modelo LightGBM y métricas finales</h3>
+        <h3>i. Modelo LightGBM y métricas finales</h3>
         <p class="codigo-desc">Entrenado sobre log(1 + demanda), validado contra el baseline jerárquico en la semana 8.</p>
         <span class="codigo-etiqueta codigo-etiqueta-python">Python</span>
         <pre class="leak-sql-block"><code class="language-python">model = lgb.LGBMRegressor(
