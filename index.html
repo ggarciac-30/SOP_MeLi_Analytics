@@ -385,7 +385,6 @@ stats["cv"] = stats["std"] / stats["mean"]</code></pre>
         <p class="codigo-desc">Mismo patrón repetido 5 veces (cliente+producto, agencia+producto, ruta+producto, cliente, producto), solo cambia la columna de agrupación.</p>
         <span class="codigo-etiqueta codigo-etiqueta-sql">SQL</span>
         <pre class="leak-sql-block"><code class="language-sql">
-
 -- Nivel 1: Cliente + Producto
 CREATE TABLE enc_cliprod AS
 SELECT Cliente_ID, Producto_ID,
@@ -422,7 +421,7 @@ FROM ventas
 WHERE Semana BETWEEN 3 AND 7
 GROUP BY Cliente_ID;
 
---Nivel 5: Producto
+-- Nivel 5: Producto
 CREATE TABLE enc_prod AS
 SELECT Producto_ID,
        AVG(Demanda_uni_equil) AS prod_mean,
