@@ -354,11 +354,41 @@ FROM clientes
 GROUP BY Cliente_ID
 HAVING n_nombres > 1;</code></pre>
         <span class="codigo-etiqueta codigo-etiqueta-python" style="margin-top: var(--espacio-sm);">Python</span>
-        <pre class="leak-sql-block"><code class="language-python">def normalizar_espacios(texto):
-    return re.sub(r"\s+", " ", texto.strip()) if pd.notna(texto) else texto
+        <pre class="leak-sql-block"><code class="language-python">PLACEHOLDERS = {"SIN NOMBRE", "SIN DATO", "SIN DATOS", "NO IDENTIFICADO","DESCONOCIDO", "N/A", "NA",}
 
-cli["NombreCliente"] = cli["NombreCliente"].apply(normalizar_espacios)
-cli = cli.drop_duplicates(subset=["Cliente_ID", "NombreCliente"])</code></pre>
+def normalizar_espacios(texto: str) -> str:
+    """Quita espacios al inicio/final y colapsa espacios internos multiples a uno solo."""
+    if pd.isna(texto):
+        return texto
+    return re.sub(r"\s+", " ", texto.strip())
+
+
+def es_placeholder(nombre: str) -> bool:
+    """True si el nombre esta vacio/nulo o es un texto generico tipo 'SIN NOMBRE'."""
+    return pd.isna(nombre) or nombre.strip() == "" or nombre.strip().upper() in PLACEHOLDERS
+
+
+def elegir_mejor_nombre(nombres: pd.Series) -> str:
+    """De los nombres de un mismo Cliente_ID, prefiere uno que no sea placeholder."""
+    reales = [n for n in nombres if not es_placeholder(n)]
+    return reales[0] if reales else nombres.iloc[0]
+
+
+def limpiar_tabla_clientes(cli: pd.DataFrame) -> pd.DataFrame:
+    out = cli.copy()
+    out["NombreCliente"] = out["NombreCliente"].apply(normalizar_espacios)
+
+    n_conflictos = (out.groupby("Cliente_ID")["NombreCliente"].nunique() > 1).sum()
+    if n_conflictos:
+        print(f"{n_conflictos} Cliente_ID con mas de un nombre distinto -- se resuelve prefiriendo el nombre real.")
+
+    out = out.groupby("Cliente_ID", as_index=False)["NombreCliente"].agg(elegir_mejor_nombre)
+
+    assert out["Cliente_ID"].is_unique, "Cliente_ID sigue sin ser unico, revisar"
+    print(f"cliente_tabla lista: {len(out)} filas, 1 por Cliente_ID")
+    return out
+
+</code></pre>
       </div>
 
       <div class="codigo-card" id="calculo-cv">
