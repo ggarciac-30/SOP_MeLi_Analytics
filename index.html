@@ -384,20 +384,53 @@ stats["cv"] = stats["std"] / stats["mean"]</code></pre>
         <h3>6. Encoders jerárquicos: media histórica por nivel</h3>
         <p class="codigo-desc">Mismo patrón repetido 5 veces (cliente+producto, agencia+producto, ruta+producto, cliente, producto), solo cambia la columna de agrupación.</p>
         <span class="codigo-etiqueta codigo-etiqueta-sql">SQL</span>
-        <pre class="leak-sql-block"><code class="language-sql">CREATE TABLE enc_cliprod AS
+        <pre class="leak-sql-block"><code class="language-sql">
+
+-- Nivel 1: Cliente + Producto
+CREATE TABLE enc_cliprod AS
 SELECT Cliente_ID, Producto_ID,
        AVG(Demanda_uni_equil) AS cliprod_mean,
-       COUNT(*)               AS cliprod_count
+       COUNT(*) AS cliprod_count
 FROM ventas
 WHERE Semana BETWEEN 3 AND 7
-GROUP BY Cliente_ID, Producto_ID;</code></pre>
-        <span class="codigo-etiqueta codigo-etiqueta-python" style="margin-top: var(--espacio-sm);">Python</span>
-        <pre class="leak-sql-block"><code class="language-python">hist = ventas[ventas.Semana.between(3, 7)]
-enc_cliprod = (hist.groupby(["Cliente_ID", "Producto_ID"])["Demanda_uni_equil"]
-                    .agg(cliprod_mean="mean", cliprod_count="count")
-                    .reset_index())</code></pre>
-      </div>
+GROUP BY Cliente_ID, Producto_ID;
 
+-- Nivel 2: Agencia + Producto
+CREATE TABLE enc_agprod AS
+SELECT Agencia_ID, Producto_ID,
+       AVG(Demanda_uni_equil) AS agprod_mean,
+       COUNT(*) AS agprod_count
+FROM ventas
+WHERE Semana BETWEEN 3 AND 7
+GROUP BY Agencia_ID, Producto_ID;
+
+-- Nivel 3: Ruta + Producto
+CREATE TABLE enc_rutaprod AS
+SELECT Ruta_SAK, Producto_ID,
+       AVG(Demanda_uni_equil) AS rutaprod_mean,
+       COUNT(*) AS rutaprod_count
+FROM ventas
+WHERE Semana BETWEEN 3 AND 7
+GROUP BY Ruta_SAK, Producto_ID;
+
+-- Nivel 4: Cliente (sin importar el producto)
+CREATE TABLE enc_cli AS
+SELECT Cliente_ID,
+       AVG(Demanda_uni_equil) AS cli_mean,
+       COUNT(*) AS cli_count
+FROM ventas
+WHERE Semana BETWEEN 3 AND 7
+GROUP BY Cliente_ID;
+
+--Nivel 5: Producto
+CREATE TABLE enc_prod AS
+SELECT Producto_ID,
+       AVG(Demanda_uni_equil) AS prod_mean,
+       COUNT(*) AS prod_count
+FROM ventas
+WHERE Semana BETWEEN 3 AND 7
+GROUP BY Producto_ID;
+        
       <div class="codigo-card" id="calculo-umbral">
         <h3>7. Umbral de respaldo: cuándo confiar en un ranking</h3>
         <p class="codigo-desc">El promedio del top 10 se estabiliza a partir de 150 transacciones de respaldo mínimo — antes de eso, el ranking está dominado por ruido de muestra chica.</p>
