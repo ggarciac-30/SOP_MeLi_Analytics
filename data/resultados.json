@@ -295,19 +295,6 @@
     },
     {
       "numero": 10,
-      "pregunta": "¿Cómo se ve todo esto junto, en un caso real?",
-      "kpis": [
-        {"valor": "1123", "etiqueta": "Agencia (Chalco, Edo. Méx.)"},
-        {"valor": "1278", "etiqueta": "Producto (Nito 1p 62g BIM)"},
-        {"valor": "27.3", "etiqueta": "Predicción semana 9 (unidades)"}
-      ],
-      "imagen": "images/serie_tiempo_combo.png",
-      "respuesta": "Se graficó la combinación Agencia 1123 – Producto 1278 – Cliente 9670430, con su historial real de las semanas 3 a 8 (30, 11, 36, 40, 20, 27 unidades) y la predicción de la semana 9 (27.3) superpuesta, calculada con el método ganador: el baseline jerárquico.",
-      "nota": "Esta gráfica resume visualmente todo el proyecto: un historial real, ruidoso pero con un nivel típico reconocible, y una predicción que se apoya en ese mismo nivel — no en una tendencia inventada.",
-      "verCodigo": "calculo-serie"
-    },
-    {
-      "numero": 11,
       "pregunta": "¿Cómo se definió una muestra de clientes que representara a una agencia completa?",
       "kpis": [
         {"valor": "7,950", "etiqueta": "Clientes en la agencia 1123"},
@@ -319,7 +306,7 @@
       "verCodigo": "calculo-muestra"
     },
     {
-      "numero": 12,
+      "numero": 11,
       "pregunta": "¿Cuál es la predicción final de la semana 9 para los productos más vendidos de la muestra?",
       "tabla": {
         "titulo": "Predicción semana 9 — método baseline jerárquico",
@@ -333,7 +320,20 @@
       "respuesta": "Con el método ganador (baseline jerárquico) y los encoders reconstruidos usando TODO el historial disponible (semanas 3 a 8, ya sin necesidad de reservar ninguna semana para validar), se predijo la semana 9 para los 3 productos más vendidos dentro de la muestra de 396 clientes de la Agencia 1123.",
       "nota": "Estas cifras son ligeramente distintas (10-25% más altas) a una versión preliminar calculada al inicio del proyecto con un blend LightGBM+baseline. Estas son las cifras finales y correctas, alineadas con la recomendación de la Fase D.",
       "verCodigo": "calculo-prediccion"
-    }
+    },
+    {
+      "numero": 12,
+      "pregunta": "¿Cómo se ve todo esto junto, graficamente?",
+      "kpis": [
+        {"valor": "1123", "etiqueta": "Agencia (Chalco, Edo. Méx.)"},
+        {"valor": "1278", "etiqueta": "Producto (Nito 1p 62g BIM)"},
+        {"valor": "27.3", "etiqueta": "Predicción semana 9 (unidades)"}
+      ],
+      "imagen": "images/serie_tiempo_combo.png",
+      "respuesta": "Se graficó la combinación Agencia 1123 – Producto 1278 – Cliente 9670430, con su historial real de las semanas 3 a 8 (30, 11, 36, 40, 20, 27 unidades) y la predicción de la semana 9 (27.3) superpuesta, calculada con el método ganador: el baseline jerárquico.",
+      "nota": "Esta gráfica resume visualmente todo el proyecto: un historial real, ruidoso pero con un nivel típico reconocible, y una predicción que se apoya en ese mismo nivel — no en una tendencia inventada.",
+      "verCodigo": "calculo-serie"
+    },
   ],
   "conclusiones": [
     "El baseline jerárquico —promedio histórico construido enteramente en SQL— es el método recomendado para producción: mejor RMSLE de los tres evaluados (0.536), no requiere reentrenamiento periódico, no depende de hiperparámetros, y es trivial de auditar por cualquier persona con conocimientos de SQL.",
