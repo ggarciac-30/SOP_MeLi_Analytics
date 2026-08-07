@@ -526,7 +526,7 @@ rmsle_trampa  = rmsle(real, pred_trampa)    # 0.3397 -- inflado, no confiable</c
       </div>
 
       <div class="codigo-card" id="calculo-modelo">
-        <h3>9. Modelo LightGBM y métricas finales</h3>
+        <h3>i. Modelo LightGBM y métricas finales</h3>
         <p class="codigo-desc">Entrenado sobre log(1 + demanda), validado contra el baseline jerárquico en la semana 8.</p>
         <span class="codigo-etiqueta codigo-etiqueta-python">Python</span>
         <pre class="leak-sql-block"><code class="language-python">model = lgb.LGBMRegressor(
@@ -542,7 +542,7 @@ rmsle_modelo = rmsle(real, pred)                 # 0.5624 -- pierde contra el ba
       </div>
 
       <div class="codigo-card" id="calculo-serie">
-        <h3>10. Serie de tiempo de un caso real</h3>
+        <h3>j. Serie de tiempo de un caso real</h3>
         <p class="codigo-desc">Historial real de un combo agencia-producto-cliente, con la predicción de la semana 9 superpuesta.</p>
         <span class="codigo-etiqueta codigo-etiqueta-python">Python</span>
         <pre class="leak-sql-block"><code class="language-python">def graficar_serie_tiempo(con, agencia_id, producto_id, cliente_id, prediccion=None, ruta_salida="serie_tiempo.png"):
@@ -563,7 +563,7 @@ rmsle_modelo = rmsle(real, pred)                 # 0.5624 -- pierde contra el ba
       </div>
 
       <div class="codigo-card" id="calculo-muestra">
-        <h3>11. Muestra estratificada de clientes de una agencia</h3>
+        <h3>k. Muestra estratificada de clientes de una agencia</h3>
         <p class="codigo-desc">4 cuartiles de volumen de compra, 5% de cada uno — para que la muestra represente tanto a los clientes chicos como a los grandes.</p>
         <span class="codigo-etiqueta codigo-etiqueta-sql">SQL</span>
         <pre class="leak-sql-block"><code class="language-sql">SELECT Cliente_ID, SUM(Demanda_uni_equil) demanda_total, COUNT(*) n_trans
@@ -579,7 +579,7 @@ muestra = pd.concat([
       </div>
 
       <div class="codigo-card" id="calculo-prediccion">
-        <h3>12. Predicción final: semana 9, top 3 productos de la muestra</h3>
+        <h3>l. Predicción final: semana 9, top 3 productos de la muestra</h3>
         <p class="codigo-desc">Encoders reconstruidos con TODO el historial (semanas 3-8, sin reservar semana de validación) porque ya no hace falta medir error — solo predecir.</p>
         <span class="codigo-etiqueta codigo-etiqueta-sql">SQL</span>
         <pre class="leak-sql-block"><code class="language-sql">CREATE TABLE prod_cliprod AS
