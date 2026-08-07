@@ -299,10 +299,10 @@
       "kpis": [
         {"valor": "1123", "etiqueta": "Agencia (Chalco, Edo. Méx.)"},
         {"valor": "1278", "etiqueta": "Producto (Nito 1p 62g BIM)"},
-        {"valor": "22.6", "etiqueta": "Predicción semana 9 (unidades)"}
+        {"valor": "27.3", "etiqueta": "Predicción semana 9 (unidades)"}
       ],
       "imagen": "images/serie_tiempo_combo.png",
-      "respuesta": "Se graficó la combinación Agencia 1123 – Producto 1278 – Cliente 9670430, con su historial real de las semanas 3 a 8 (30, 11, 36, 40, 20, 27 unidades) y la predicción de la semana 9 (22.6) superpuesta, calculada con el método ganador: el baseline jerárquico.",
+      "respuesta": "Se graficó la combinación Agencia 1123 – Producto 1278 – Cliente 9670430, con su historial real de las semanas 3 a 8 (30, 11, 36, 40, 20, 27 unidades) y la predicción de la semana 9 (27.3) superpuesta, calculada con el método ganador: el baseline jerárquico.",
       "nota": "Esta gráfica resume visualmente todo el proyecto: un historial real, ruidoso pero con un nivel típico reconocible, y una predicción que se apoya en ese mismo nivel — no en una tendencia inventada.",
       "verCodigo": "calculo-serie"
     },
