@@ -333,15 +333,16 @@ pct_ceros = (ventas["Demanda_uni_equil"] == 0).mean() * 100</code></pre>
         <h3>c. Percentiles: cuantificar el sesgo de la demanda</h3>
         <p class="codigo-desc">100 grupos de igual tamaño (no de igual ancho) — necesario porque el 80% de las transacciones vale 9 unidades o menos.</p>
         <span class="codigo-etiqueta codigo-etiqueta-sql">SQL</span>
-        <pre class="leak-sql-block"><code class="language-sql">WITH percentiles AS (
-SELECT Demanda_uni_equil ,
-NTILE (100) OVER ( ORDER BY Demanda_uni_equil ) AS pct
-FROM ventas
-)
-SELECT pct ,
-MIN ( Demanda_uni_equil ) AS minimo ,
-MAX ( Demanda_uni_equil ) AS maximo ,
-COUNT (*) AS registros
+        <pre class="leak-sql-block"><code class="language-sql">
+WITH percentiles AS (
+                      SELECT Demanda_uni_equil ,
+                      NTILE (100) OVER ( ORDER BY Demanda_uni_equil ) AS pct
+                      FROM ventas
+                    )
+SELECT  pct ,
+        MIN ( Demanda_uni_equil ) AS minimo ,
+        MAX ( Demanda_uni_equil ) AS maximo ,
+        COUNT (*) AS registros
 FROM percentiles
 GROUP BY pct
 ORDER BY pct;
