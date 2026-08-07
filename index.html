@@ -334,12 +334,18 @@ pct_ceros = (ventas["Demanda_uni_equil"] == 0).mean() * 100</code></pre>
         <p class="codigo-desc">100 grupos de igual tamaño (no de igual ancho) — necesario porque el 80% de las transacciones vale 9 unidades o menos.</p>
         <span class="codigo-etiqueta codigo-etiqueta-sql">SQL</span>
         <pre class="leak-sql-block"><code class="language-sql">WITH percentiles AS (
-    SELECT Demanda_uni_equil,
-           NTILE(100) OVER (ORDER BY Demanda_uni_equil) AS pct
-    FROM ventas
+SELECT Demanda_uni_equil ,
+NTILE (100) OVER ( ORDER BY Demanda_uni_equil ) AS pct
+FROM ventas
 )
-SELECT pct, MIN(Demanda_uni_equil) AS minimo, MAX(Demanda_uni_equil) AS maximo
-FROM percentiles GROUP BY pct ORDER BY pct;</code></pre>
+SELECT pct ,
+MIN ( Demanda_uni_equil ) AS minimo ,
+MAX ( Demanda_uni_equil ) AS maximo ,
+COUNT (*) AS registros
+FROM percentiles
+GROUP BY pct
+ORDER BY pct;
+</code></pre>
         <span class="codigo-etiqueta codigo-etiqueta-python" style="margin-top: var(--espacio-sm);">Python</span>
         <pre class="leak-sql-block"><code class="language-python">grupo = pd.qcut(serie.rank(method="first"), 100, labels=False) + 1
 resumen = serie.groupby(grupo).agg(["min", "max"])</code></pre>
